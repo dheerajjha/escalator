@@ -18,11 +18,11 @@ class ApiService {
       body: jsonEncode({'displayName': displayName, 'role': role}),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return User.fromJson(data['user']);
     } else {
-      throw Exception('Failed to create user');
+      throw Exception('Failed to create user: ${response.statusCode} ${response.body}');
     }
   }
 

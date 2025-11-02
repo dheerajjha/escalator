@@ -2,6 +2,19 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
+// Helper function to format SQLite datetime to ISO 8601
+function formatWorkItem(item) {
+  if (!item) return item;
+
+  return {
+    ...item,
+    created_at: item.created_at ? new Date(item.created_at + ' UTC').toISOString() : null,
+    updated_at: item.updated_at ? new Date(item.updated_at + ' UTC').toISOString() : null,
+    stage_updated_at: item.stage_updated_at ? new Date(item.stage_updated_at + ' UTC').toISOString() : null,
+    resolved_at: item.resolved_at ? new Date(item.resolved_at + ' UTC').toISOString() : null
+  };
+}
+
 // Stage progression mapping
 const STAGE_PROGRESSION = {
   'active': 'day2_nudge',
@@ -85,7 +98,7 @@ router.post('/:id/escalate', (req, res) => {
 
     res.json({
       message: 'Work item escalated successfully',
-      workItem: updatedItem
+      workItem: formatWorkItem(updatedItem)
     });
   } catch (error) {
     console.error('Error escalating work item:', error);
@@ -102,7 +115,12 @@ router.get('/:id/history', (req, res) => {
       ORDER BY timestamp DESC
     `).all(req.params.id);
 
-    res.json(history);
+    const formattedHistory = history.map(h => ({
+      ...h,
+      timestamp: h.timestamp ? new Date(h.timestamp + ' UTC').toISOString() : null
+    }));
+
+    res.json(formattedHistory);
   } catch (error) {
     console.error('Error fetching escalation history:', error);
     res.status(500).json({ error: 'Failed to fetch escalation history' });
@@ -120,7 +138,13 @@ router.get('/reminders/pending', (req, res) => {
       ORDER BY r.scheduled_for ASC
     `).all();
 
-    res.json(reminders);
+    const formattedReminders = reminders.map(r => ({
+      ...r,
+      scheduled_for: r.scheduled_for ? new Date(r.scheduled_for + ' UTC').toISOString() : null,
+      sent_at: r.sent_at ? new Date(r.sent_at + ' UTC').toISOString() : null
+    }));
+
+    res.json(formattedReminders);
   } catch (error) {
     console.error('Error fetching reminders:', error);
     res.status(500).json({ error: 'Failed to fetch reminders' });

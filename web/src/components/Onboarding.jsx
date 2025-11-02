@@ -21,10 +21,17 @@ function Onboarding({ onUserCreated }) {
 
     try {
       const response = await createUser(displayName.trim(), role);
-      onUserCreated(response.data.user);
+      const { user, isNewUser, message } = response.data;
+
+      // Show welcome message in console
+      if (!isNewUser) {
+        console.log('Welcome back!', user.display_name);
+      }
+
+      onUserCreated(user);
     } catch (err) {
-      console.error('Error creating user:', err);
-      setError('Failed to create user. Please try again.');
+      console.error('Error onboarding user:', err);
+      setError('Failed to sign in. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -53,7 +60,7 @@ function Onboarding({ onUserCreated }) {
               disabled={loading}
             />
             <p className="form-help">
-              We'll generate a unique username for you
+              Enter the same name to access your existing dashboard
             </p>
           </div>
 
@@ -87,7 +94,7 @@ function Onboarding({ onUserCreated }) {
             className="btn-primary onboarding-submit"
             disabled={loading}
           >
-            {loading ? 'Creating your account...' : 'Get Started'}
+            {loading ? 'Signing in...' : 'Continue'}
           </button>
         </form>
 

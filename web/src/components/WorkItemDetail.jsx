@@ -69,10 +69,6 @@ function WorkItemDetail({ user }) {
   }, [id]);
 
   const handleEscalate = async () => {
-    if (!confirm('Are you sure you want to escalate this work item to the next stage?')) {
-      return;
-    }
-
     setActionLoading(true);
     try {
       await escalateWorkItem(id);

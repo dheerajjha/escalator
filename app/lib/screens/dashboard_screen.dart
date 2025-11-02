@@ -19,8 +19,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
-    _setupNotifications();
+    // Defer loading to avoid calling setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+      _setupNotifications();
+    });
   }
 
   Future<void> _loadData() async {

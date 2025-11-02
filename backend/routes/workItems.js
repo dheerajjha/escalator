@@ -2,6 +2,19 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
+// Helper function to format SQLite datetime to ISO 8601
+function formatWorkItem(item) {
+  if (!item) return item;
+
+  return {
+    ...item,
+    created_at: item.created_at ? new Date(item.created_at + ' UTC').toISOString() : null,
+    updated_at: item.updated_at ? new Date(item.updated_at + ' UTC').toISOString() : null,
+    stage_updated_at: item.stage_updated_at ? new Date(item.stage_updated_at + ' UTC').toISOString() : null,
+    resolved_at: item.resolved_at ? new Date(item.resolved_at + ' UTC').toISOString() : null
+  };
+}
+
 // Create new work item
 router.post('/', (req, res) => {
   try {
@@ -53,7 +66,7 @@ router.post('/', (req, res) => {
 
     res.status(201).json({
       message: 'Work item created successfully',
-      workItem
+      workItem: formatWorkItem(workItem)
     });
   } catch (error) {
     console.error('Error creating work item:', error);
@@ -79,7 +92,7 @@ router.get('/user/:userId', (req, res) => {
         stage_updated_at DESC
     `).all(req.params.userId);
 
-    res.json(workItems);
+    res.json(workItems.map(formatWorkItem));
   } catch (error) {
     console.error('Error fetching work items:', error);
     res.status(500).json({ error: 'Failed to fetch work items' });
@@ -109,10 +122,23 @@ router.get('/:id', (req, res) => {
       ORDER BY date DESC
     `).all(req.params.id);
 
+    // Format history timestamps
+    const formattedHistory = history.map(h => ({
+      ...h,
+      timestamp: h.timestamp ? new Date(h.timestamp + ' UTC').toISOString() : null
+    }));
+
+    // Format standup timestamps
+    const formattedStandups = standups.map(s => ({
+      ...s,
+      date: s.date,
+      created_at: s.created_at ? new Date(s.created_at + ' UTC').toISOString() : null
+    }));
+
     res.json({
-      ...workItem,
-      history,
-      standups
+      ...formatWorkItem(workItem),
+      history: formattedHistory,
+      standups: formattedStandups
     });
   } catch (error) {
     console.error('Error fetching work item:', error);
@@ -149,7 +175,7 @@ router.put('/:id', (req, res) => {
 
     res.json({
       message: 'Work item updated successfully',
-      workItem
+      workItem: formatWorkItem(workItem)
     });
   } catch (error) {
     console.error('Error updating work item:', error);
@@ -209,7 +235,7 @@ router.post('/:id/resolve', (req, res) => {
 
     res.json({
       message: 'Work item resolved successfully',
-      workItem: updatedItem
+      workItem: formatWorkItem(updatedItem)
     });
   } catch (error) {
     console.error('Error resolving work item:', error);

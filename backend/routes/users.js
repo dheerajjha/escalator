@@ -3,14 +3,12 @@ const router = express.Router();
 const db = require('../config/database');
 const { v4: uuidv4 } = require('uuid');
 
-// Generate unique username
+// Generate username from display name (no random component)
 function generateUsername(displayName) {
-  const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const uniqueId = uuidv4().split('-')[0];
-  return `${base}_${uniqueId}`;
+  return displayName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 }
 
-// Create new user (onboarding)
+// Onboard user (returns existing user if name matches, creates new otherwise)
 router.post('/onboard', (req, res) => {
   try {
     const { displayName, role } = req.body;
@@ -19,24 +17,40 @@ router.post('/onboard', (req, res) => {
       return res.status(400).json({ error: 'Display name is required' });
     }
 
-    const username = generateUsername(displayName);
+    const trimmedName = displayName.trim();
+
+    // Check if user with this exact display name already exists
+    const existingUser = db.prepare('SELECT * FROM users WHERE display_name = ?').get(trimmedName);
+
+    if (existingUser) {
+      // Return existing user
+      return res.status(200).json({
+        message: 'Welcome back!',
+        user: existingUser,
+        isNewUser: false
+      });
+    }
+
+    // Create new user
+    const username = generateUsername(trimmedName);
 
     const stmt = db.prepare(`
       INSERT INTO users (username, display_name, role)
       VALUES (?, ?, ?)
     `);
 
-    const result = stmt.run(username, displayName.trim(), role || 'senior');
+    const result = stmt.run(username, trimmedName, role || 'senior');
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
 
     res.status(201).json({
       message: 'User created successfully',
-      user
+      user,
+      isNewUser: true
     });
   } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
+    console.error('Error onboarding user:', error);
+    res.status(500).json({ error: 'Failed to onboard user' });
   }
 });
 
