@@ -8,15 +8,21 @@
 class NotificationService {
   constructor() {
     this.fcmEnabled = false;
-    // Uncomment and configure when Firebase is set up:
-    // const admin = require('firebase-admin');
-    // const serviceAccount = require('../config/firebase-service-account.json');
-    //
-    // admin.initializeApp({
-    //   credential: admin.credential.cert(serviceAccount)
-    // });
-    // this.messaging = admin.messaging();
-    // this.fcmEnabled = true;
+
+    try {
+      const admin = require('firebase-admin');
+      const serviceAccount = require('../config/firebase-service-account.json');
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      this.messaging = admin.messaging();
+      this.fcmEnabled = true;
+      console.log('✅ Firebase Cloud Messaging initialized successfully');
+    } catch (error) {
+      console.log('⚠️  FCM initialization failed:', error.message);
+      console.log('   Push notifications will be disabled');
+    }
   }
 
   async sendPushNotification(fcmToken, title, body, data = {}) {
@@ -30,21 +36,18 @@ class NotificationService {
     }
 
     try {
-      // Uncomment when Firebase is configured:
-      // const message = {
-      //   notification: {
-      //     title,
-      //     body
-      //   },
-      //   data,
-      //   token: fcmToken
-      // };
-      //
-      // const response = await this.messaging.send(message);
-      // console.log('✅ Successfully sent notification:', response);
-      // return { success: true, messageId: response };
+      const message = {
+        notification: {
+          title,
+          body
+        },
+        data,
+        token: fcmToken
+      };
 
-      return { success: false, message: 'FCM not configured' };
+      const response = await this.messaging.send(message);
+      console.log('✅ Successfully sent notification:', response);
+      return { success: true, messageId: response };
     } catch (error) {
       console.error('❌ Error sending notification:', error);
       return { success: false, error: error.message };
@@ -58,21 +61,18 @@ class NotificationService {
     }
 
     try {
-      // Uncomment when Firebase is configured:
-      // const message = {
-      //   notification: {
-      //     title,
-      //     body
-      //   },
-      //   data,
-      //   tokens: fcmTokens
-      // };
-      //
-      // const response = await this.messaging.sendMulticast(message);
-      // console.log(`✅ Successfully sent ${response.successCount} notifications`);
-      // return { success: true, response };
+      const message = {
+        notification: {
+          title,
+          body
+        },
+        data,
+        tokens: fcmTokens
+      };
 
-      return { success: false, message: 'FCM not configured' };
+      const response = await this.messaging.sendMulticast(message);
+      console.log(`✅ Successfully sent ${response.successCount} notifications`);
+      return { success: true, response };
     } catch (error) {
       console.error('❌ Error sending multicast notification:', error);
       return { success: false, error: error.message };
