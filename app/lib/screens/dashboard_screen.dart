@@ -88,43 +88,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return Scaffold(
           backgroundColor: const Color(0xFFF5F7FA),
           appBar: AppBar(
-            elevation: 0,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                ),
-              ),
-            ),
+            backgroundColor: Colors.white,
+            elevation: 1,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Escalator',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1F2937),
                   ),
                 ),
                 Text(
                   'Welcome back, ${user.displayName}',
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white70,
+                    fontSize: 11,
+                    color: Color(0xFF6B7280),
                   ),
                 ),
               ],
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.refresh, color: Colors.white),
+                icon: const Icon(Icons.refresh, color: Color(0xFF6B7280)),
                 onPressed: _loadData,
               ),
               IconButton(
-                icon: const Icon(Icons.logout, color: Colors.white),
+                icon: const Icon(Icons.logout, color: Color(0xFF6B7280)),
                 onPressed: _handleLogout,
               ),
             ],
@@ -157,34 +149,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ).then((_) => _loadData());
                       },
                     ),
-          floatingActionButton: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6366F1).withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CreateWorkItemScreen(userId: user.id),
                 ),
-              ],
-            ),
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CreateWorkItemScreen(userId: user.id),
-                  ),
-                ).then((_) => _loadData());
-              },
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text(
-                'New Work Item',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ).then((_) => _loadData());
+            },
+            backgroundColor: const Color(0xFF3B82F6),
+            elevation: 2,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: const Text(
+              'New Work Item',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           ),

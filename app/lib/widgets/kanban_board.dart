@@ -48,28 +48,26 @@ class KanbanBoard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          color: Colors.white,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStat('Active', activeItems, const Color(0xFFF59E0B), const Color(0xFFFBBF24)),
-              _buildStat('Resolved', resolvedItems, const Color(0xFF10B981), const Color(0xFF34D399)),
-              _buildStat('Total', workItems.length, const Color(0xFF6366F1), const Color(0xFF8B5CF6)),
+              const Text(
+                'Your Work Items',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const Spacer(),
+              _buildStatChip('Active', activeItems, const Color(0xFF3B82F6)),
+              const SizedBox(width: 12),
+              _buildStatChip('Resolved', resolvedItems, const Color(0xFF10B981)),
             ],
           ),
         ),
+        const Divider(height: 1, thickness: 1),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(8),
@@ -90,45 +88,26 @@ class KanbanBoard extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(String label, int count, Color startColor, Color endColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [startColor, endColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  Widget _buildStatChip(String label, int count, Color color) {
+    return Row(
+      children: [
+        Text(
+          count.toString(),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: startColor.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF6B7280),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            count.toString(),
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -137,45 +116,30 @@ class KanbanBoard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
             border: Border(
-              left: BorderSide(
-                color: color,
-                width: 4,
-              ),
+              bottom: BorderSide(color: color, width: 3),
             ),
           ),
           child: Row(
             children: [
               Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+                title.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF6B7280),
+                  letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(width: 12),
+              const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withOpacity(0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   items.length.toString(),
@@ -209,102 +173,85 @@ class KanbanBoard extends StatelessWidget {
 
   Widget _buildWorkItemCard(WorkItem item, Color accentColor) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-        border: Border(
-          left: BorderSide(
-            color: accentColor,
-            width: 4,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+      ),
+      child: InkWell(
+        onTap: () => onWorkItemTap(item),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              if (item.description != null && item.description!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  item.description!.length > 80
+                      ? '${item.description!.substring(0, 80)}...'
+                      : item.description!,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF6B7280),
+                    height: 1.4,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(height: 10),
+              _buildInfoRow('POC:', item.dependencyPoc),
+              if (item.impact != null && item.impact!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _buildInfoRow('Impact:', item.impact!.length > 40
+                  ? '${item.impact!.substring(0, 40)}...'
+                  : item.impact!),
+              ],
+              const SizedBox(height: 4),
+              _buildInfoRow('Updated:', _formatDate(item.stageUpdatedAt)),
+            ],
           ),
         ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => onWorkItemTap(item),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
-                  ),
-                ),
-                if (item.description != null && item.description!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    item.description!.length > 100
-                        ? '${item.description!.substring(0, 100)}...'
-                        : item.description!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.4,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.person_outline, size: 14, color: accentColor),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          item.dependencyPoc,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.schedule_outlined, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      _formatDate(item.stageUpdatedAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 70,
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF9CA3AF),
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-      ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
