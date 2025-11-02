@@ -86,24 +86,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
 
         return Scaffold(
+          backgroundColor: const Color(0xFFF5F7FA),
           appBar: AppBar(
+            elevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                ),
+              ),
+            ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Escalator', style: TextStyle(fontSize: 20)),
+                const Text(
+                  'Escalator',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
                 Text(
                   'Welcome back, ${user.displayName}',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh, color: Colors.white),
                 onPressed: _loadData,
               ),
               IconButton(
-                icon: const Icon(Icons.logout),
+                icon: const Icon(Icons.logout, color: Colors.white),
                 onPressed: _handleLogout,
               ),
             ],
@@ -136,16 +157,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ).then((_) => _loadData());
                       },
                     ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => CreateWorkItemScreen(userId: user.id),
+          floatingActionButton: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              ),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF6366F1).withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
                 ),
-              ).then((_) => _loadData());
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('New Work Item'),
+              ],
+            ),
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CreateWorkItemScreen(userId: user.id),
+                  ),
+                ).then((_) => _loadData());
+              },
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'New Work Item',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
           ),
         );
       },

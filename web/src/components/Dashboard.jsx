@@ -10,6 +10,7 @@ function Dashboard({ user, onLogout }) {
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showReminders, setShowReminders] = useState(false);
   const navigate = useNavigate();
 
   const loadData = async () => {
@@ -55,6 +56,18 @@ function Dashboard({ user, onLogout }) {
             </p>
           </div>
           <div className="header-actions">
+            {upcomingReminders.length > 0 && (
+              <button
+                className="btn-icon reminder-bell"
+                onClick={() => setShowReminders(!showReminders)}
+                title="View upcoming reminders"
+              >
+                <span className="bell-icon">🔔</span>
+                {upcomingReminders.length > 0 && (
+                  <span className="reminder-badge">{upcomingReminders.length}</span>
+                )}
+              </button>
+            )}
             <button
               className="btn-primary"
               onClick={() => setShowCreateModal(true)}
@@ -68,14 +81,24 @@ function Dashboard({ user, onLogout }) {
         </div>
       </header>
 
-      {upcomingReminders.length > 0 && (
-        <div className="reminders-banner">
-          <h3>⏰ Upcoming Reminders ({upcomingReminders.length})</h3>
+      {showReminders && upcomingReminders.length > 0 && (
+        <div className="reminders-dropdown">
+          <div className="reminders-dropdown-header">
+            <h3>⏰ Upcoming Reminders</h3>
+            <button
+              className="btn-text"
+              onClick={() => setShowReminders(false)}
+            >
+              ✕
+            </button>
+          </div>
           <div className="reminders-list">
-            {upcomingReminders.slice(0, 3).map(reminder => (
+            {upcomingReminders.map(reminder => (
               <div key={reminder.id} className="reminder-item">
-                <span className="reminder-title">{reminder.title}</span>
-                <span className="reminder-type">{reminder.reminder_type.replace('_', ' ')}</span>
+                <div>
+                  <div className="reminder-title">{reminder.title}</div>
+                  <div className="reminder-type">{reminder.reminder_type.replace(/_/g, ' ')}</div>
+                </div>
               </div>
             ))}
           </div>
