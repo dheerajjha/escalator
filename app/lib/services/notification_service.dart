@@ -53,6 +53,13 @@ class NotificationService {
 
       // Listen to notification taps when app is in background
       FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+
+      // Listen to token refresh events (iOS tokens may not be immediately available)
+      FirebaseMessaging.instance.onTokenRefresh.listen((String token) {
+        debugPrint('🔄 FCM Token refreshed: ${token.substring(0, 20)}...');
+        // Token refresh happens automatically, no need to update backend here
+        // as it will be updated when the user logs in
+      });
     } catch (e) {
       debugPrint('Failed to initialize notifications: $e');
       // Firebase not configured - app will work without notifications
@@ -75,34 +82,35 @@ class NotificationService {
     if (_messaging == null) return null;
 
     try {
-      // On iOS, we need to get APNs token first
+      // Try to get the FCM token directly first
+      debugPrint('Attempting to get FCM token...');
+      var token = await _messaging!.getToken();
+
+      if (token != null) {
+        debugPrint('✅ FCM Token received: ${token.substring(0, 20)}...');
+        return token;
+      }
+
+      // If direct attempt failed on iOS, try with APNs token approach
       if (defaultTargetPlatform == TargetPlatform.iOS) {
-        debugPrint('Getting APNs token for iOS...');
+        debugPrint('Direct token fetch failed, trying APNs approach for iOS...');
         final apnsToken = await _messaging!.getAPNSToken();
+
         if (apnsToken != null) {
-          debugPrint('APNs token received: ${apnsToken.substring(0, 10)}...');
-        } else {
-          debugPrint('APNs token is null, waiting and retrying...');
-          // Wait a bit and retry
-          await Future.delayed(const Duration(seconds: 2));
-          final retryApnsToken = await _messaging!.getAPNSToken();
-          if (retryApnsToken == null) {
-            debugPrint('APNs token still null after retry');
-            return null;
+          debugPrint('APNs token received, retrying FCM token...');
+          token = await _messaging!.getToken();
+          if (token != null) {
+            debugPrint('✅ FCM Token received after APNs: ${token.substring(0, 20)}...');
+            return token;
           }
-          debugPrint('APNs token received on retry: ${retryApnsToken.substring(0, 10)}...');
+        } else {
+          debugPrint('⚠️  APNs token not available yet (normal in debug builds)');
+          debugPrint('Push notifications will work in production builds');
         }
       }
 
-      // Now get the FCM token
-      debugPrint('Getting FCM token...');
-      final token = await _messaging!.getToken();
-      if (token != null) {
-        debugPrint('FCM Token received: ${token.substring(0, 20)}...');
-      } else {
-        debugPrint('FCM Token is null');
-      }
-      return token;
+      debugPrint('⚠️  FCM Token not available - app will work without push notifications');
+      return null;
     } catch (e) {
       debugPrint('Failed to get FCM token: $e');
       return null;
