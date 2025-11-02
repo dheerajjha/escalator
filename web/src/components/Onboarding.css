@@ -1,0 +1,68 @@
+.onboarding-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.onboarding-card {
+  background: var(--bg-white);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+
+.onboarding-header {
+  padding: 40px 40px 20px;
+  text-align: center;
+}
+
+.onboarding-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.onboarding-header p {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.onboarding-form {
+  padding: 20px 40px 40px;
+}
+
+.onboarding-submit {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.onboarding-footer {
+  padding: 20px 40px;
+  background-color: var(--bg-light);
+  border-top: 1px solid var(--border-color);
+}
+
+.onboarding-footer p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.error-message {
+  padding: 12px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 14px;
+  margin-bottom: 16px;
+}

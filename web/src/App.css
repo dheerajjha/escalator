@@ -1,0 +1,192 @@
+.app {
+  min-height: 100vh;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Common button styles */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #475569;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--bg-light);
+}
+
+/* Common input styles */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Common form styles */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-help {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Common card styles */
+.card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+/* Common modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--bg-white);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
