@@ -21,7 +21,7 @@ npm install
 2. Configure environment (optional):
 Create `.env` file:
 ```
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://194.195.117.157:5230/api
 ```
 
 3. Start development server:
@@ -29,7 +29,7 @@ VITE_API_URL=http://localhost:3000/api
 npm run dev
 ```
 
-The app will be available at http://localhost:3001
+The app will be available at http://localhost:3001 (development) or http://194.195.117.157:5231 (production)
 
 4. Build for production:
 ```bash

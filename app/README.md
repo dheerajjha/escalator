@@ -21,9 +21,9 @@ flutter pub get
 
 2. Configure API endpoint:
 Edit `lib/services/api_service.dart` and update `baseUrl`:
-- For Android emulator: `http://10.0.2.2:3000/api`
-- For iOS simulator: `http://localhost:3000/api`
-- For physical device: `http://YOUR_IP:3000/api`
+- For Android emulator: `http://10.0.2.2:5230/api`
+- For iOS simulator: `http://localhost:5230/api`
+- For physical device/production: `http://194.195.117.157:5230/api`
 
 3. Firebase Setup (for push notifications):
    - Create a Firebase project

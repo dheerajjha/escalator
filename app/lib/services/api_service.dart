@@ -6,9 +6,9 @@ import '../models/work_item.dart';
 class ApiService {
   // Backend URL configured for remote server deployment
   static const String baseUrl = 'http://194.195.117.157:5230/api';
-  // For Android emulator use: 'http://10.0.2.2:3000/api'
-  // For iOS simulator use: 'http://localhost:3000/api'
-  // For physical device on same network: 'http://192.168.1.3:3000/api'
+  // For Android emulator use: 'http://10.0.2.2:5230/api'
+  // For iOS simulator use: 'http://localhost:5230/api'
+  // For physical device on same network: 'http://192.168.1.3:5230/api'
   // For remote server: 'http://194.195.117.157:5230/api'
 
   // Users
