@@ -19,8 +19,8 @@ router.post('/onboard', (req, res) => {
 
     const trimmedName = displayName.trim();
 
-    // Check if user with this exact display name already exists
-    const existingUser = db.prepare('SELECT * FROM users WHERE display_name = ?').get(trimmedName);
+    // Check if user with this display name already exists (case-insensitive)
+    const existingUser = db.prepare('SELECT * FROM users WHERE LOWER(display_name) = LOWER(?)').get(trimmedName);
 
     if (existingUser) {
       // Return existing user
@@ -85,13 +85,18 @@ router.get('/', (req, res) => {
 router.put('/:id/fcm-token', (req, res) => {
   try {
     const { fcmToken } = req.body;
+    const userId = req.params.id;
+
+    console.log(`📱 Updating FCM token for user ${userId}: ${fcmToken ? fcmToken.substring(0, 30) + '...' : 'null'}`);
 
     const stmt = db.prepare('UPDATE users SET fcm_token = ? WHERE id = ?');
-    stmt.run(fcmToken, req.params.id);
+    const result = stmt.run(fcmToken, userId);
+
+    console.log(`✅ FCM token updated successfully (${result.changes} row(s) affected)`);
 
     res.json({ message: 'FCM token updated successfully' });
   } catch (error) {
-    console.error('Error updating FCM token:', error);
+    console.error('❌ Error updating FCM token:', error);
     res.status(500).json({ error: 'Failed to update FCM token' });
   }
 });

@@ -75,8 +75,33 @@ class NotificationService {
     if (_messaging == null) return null;
 
     try {
+      // On iOS, we need to get APNs token first
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        debugPrint('Getting APNs token for iOS...');
+        final apnsToken = await _messaging!.getAPNSToken();
+        if (apnsToken != null) {
+          debugPrint('APNs token received: ${apnsToken.substring(0, 10)}...');
+        } else {
+          debugPrint('APNs token is null, waiting and retrying...');
+          // Wait a bit and retry
+          await Future.delayed(const Duration(seconds: 2));
+          final retryApnsToken = await _messaging!.getAPNSToken();
+          if (retryApnsToken == null) {
+            debugPrint('APNs token still null after retry');
+            return null;
+          }
+          debugPrint('APNs token received on retry: ${retryApnsToken.substring(0, 10)}...');
+        }
+      }
+
+      // Now get the FCM token
+      debugPrint('Getting FCM token...');
       final token = await _messaging!.getToken();
-      debugPrint('FCM Token: $token');
+      if (token != null) {
+        debugPrint('FCM Token received: ${token.substring(0, 20)}...');
+      } else {
+        debugPrint('FCM Token is null');
+      }
       return token;
     } catch (e) {
       debugPrint('Failed to get FCM token: $e');

@@ -34,10 +34,15 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> updateFcmToken(String fcmToken) async {
-    if (_currentUser == null) return;
+    if (_currentUser == null) {
+      debugPrint('Cannot update FCM token: No current user');
+      return;
+    }
 
     try {
+      debugPrint('Updating FCM token for user ${_currentUser!.id}: ${fcmToken.substring(0, 20)}...');
       await ApiService.updateFcmToken(_currentUser!.id, fcmToken);
+      debugPrint('FCM token updated successfully');
     } catch (e) {
       debugPrint('Failed to update FCM token: $e');
     }
