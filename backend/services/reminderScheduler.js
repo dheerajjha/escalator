@@ -5,9 +5,10 @@ const notificationService = require('./notificationService');
 // Check for due reminders every hour
 const CRON_SCHEDULE = '0 * * * *'; // Every hour at minute 0
 
-// Send task summary twice daily: 9 AM and 5 PM
-const DAILY_SUMMARY_SCHEDULE_MORNING = '0 9 * * *'; // 9 AM every day
-const DAILY_SUMMARY_SCHEDULE_EVENING = '0 17 * * *'; // 5 PM every day
+// Send task summary twice daily: 9 AM and 5 PM IST (Indian Standard Time)
+// IST is UTC+5:30, so 9 AM IST = 3:30 AM UTC, 5 PM IST = 11:30 AM UTC
+const DAILY_SUMMARY_SCHEDULE_MORNING = '30 3 * * *'; // 9 AM IST (3:30 AM UTC)
+const DAILY_SUMMARY_SCHEDULE_EVENING = '30 11 * * *'; // 5 PM IST (11:30 AM UTC)
 
 function checkAndSendReminders() {
   try {
@@ -136,7 +137,7 @@ function sendDailySummary() {
 function start() {
   console.log('🚀 Starting reminder scheduler...');
   console.log(`⏰ Reminder schedule: ${CRON_SCHEDULE} (every hour)`);
-  console.log(`⏰ Daily summary schedule: 9 AM and 5 PM`);
+  console.log(`⏰ Daily summary schedule: 9 AM and 5 PM IST (Indian Standard Time)`);
 
   // Run immediately on start
   checkAndSendReminders();
