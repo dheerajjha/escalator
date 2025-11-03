@@ -13,6 +13,11 @@ web/build/
 web/.env
 web/.env.local
 
+# Lock files
+*-lock.json
+package-lock.json
+yarn.lock
+
 # Flutter/App
 app/.dart_tool/
 app/.flutter-plugins
