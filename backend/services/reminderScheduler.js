@@ -5,6 +5,10 @@ const notificationService = require('./notificationService');
 // Check for due reminders every hour
 const CRON_SCHEDULE = '0 * * * *'; // Every hour at minute 0
 
+// Send task summary twice daily: 9 AM and 5 PM
+const DAILY_SUMMARY_SCHEDULE_MORNING = '0 9 * * *'; // 9 AM every day
+const DAILY_SUMMARY_SCHEDULE_EVENING = '0 17 * * *'; // 5 PM every day
+
 function checkAndSendReminders() {
   try {
     console.log('🔔 Checking for due reminders...');
@@ -70,16 +74,79 @@ function checkAndSendReminders() {
   }
 }
 
+// Send daily task summary to all users
+function sendDailySummary() {
+  try {
+    console.log('📊 Sending daily task summary...');
+
+    // Get all users with FCM tokens
+    const users = db.prepare(`
+      SELECT id, username, display_name, fcm_token
+      FROM users
+      WHERE fcm_token IS NOT NULL
+    `).all();
+
+    if (users.length === 0) {
+      console.log('📭 No users with FCM tokens found');
+      return;
+    }
+
+    users.forEach(user => {
+      try {
+        // Get user's pending work items
+        const workItems = db.prepare(`
+          SELECT
+            COUNT(*) as total_pending,
+            SUM(CASE WHEN current_stage = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+            SUM(CASE WHEN current_stage = 'blocked' THEN 1 ELSE 0 END) as blocked
+          FROM work_items
+          WHERE user_id = ? AND current_stage != 'resolved'
+        `).get(user.id);
+
+        // Only send notification if user has pending tasks
+        if (workItems && workItems.total_pending > 0) {
+          let message = `You have ${workItems.total_pending} pending task${workItems.total_pending > 1 ? 's' : ''}`;
+
+          if (workItems.in_progress > 0) {
+            message += `, ${workItems.in_progress} in progress`;
+          }
+          if (workItems.blocked > 0) {
+            message += `, ${workItems.blocked} blocked`;
+          }
+
+          notificationService.sendPushNotification(
+            user.fcm_token,
+            'Daily Task Summary',
+            message,
+            { type: 'daily_summary' }
+          );
+
+          console.log(`✅ Sent daily summary to ${user.username}: ${workItems.total_pending} tasks`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to send summary to user #${user.id}:`, error);
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error in daily summary scheduler:', error);
+  }
+}
+
 // Start the scheduler
 function start() {
   console.log('🚀 Starting reminder scheduler...');
-  console.log(`⏰ Schedule: ${CRON_SCHEDULE} (every hour)`);
+  console.log(`⏰ Reminder schedule: ${CRON_SCHEDULE} (every hour)`);
+  console.log(`⏰ Daily summary schedule: 9 AM and 5 PM`);
 
   // Run immediately on start
   checkAndSendReminders();
 
-  // Schedule recurring checks
+  // Schedule recurring checks for reminders
   cron.schedule(CRON_SCHEDULE, checkAndSendReminders);
+
+  // Schedule daily summaries - twice a day (9 AM and 5 PM)
+  cron.schedule(DAILY_SUMMARY_SCHEDULE_MORNING, sendDailySummary);
+  cron.schedule(DAILY_SUMMARY_SCHEDULE_EVENING, sendDailySummary);
 }
 
-module.exports = { start, checkAndSendReminders };
+module.exports = { start, checkAndSendReminders, sendDailySummary };

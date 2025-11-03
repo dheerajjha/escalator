@@ -149,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ).then((_) => _loadData());
                       },
                     ),
-          floatingActionButton: FloatingActionButton.extended(
+          floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -159,15 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
             backgroundColor: const Color(0xFF3B82F6),
             elevation: 2,
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              'New Work Item',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
+            child: const Icon(Icons.add, color: Colors.white),
           ),
         );
       },
